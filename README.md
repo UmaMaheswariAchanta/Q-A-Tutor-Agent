@@ -31,7 +31,7 @@ Deploy to cloud platforms with automatic model downloads. Choose from CPU-based 
 [![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/deploy?repo=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
 **GPU Cloud (Recommended for faster inference)**
-- **RunPod GPU** - Dedicated GPU instances for LLM workloads
+- **RunPod GPU** - Dedicated GPU instances for LLM workloads ([Deployment Guide](./RUNPOD_DEPLOYMENT.md))
 - **Vast.ai GPU** - Affordable GPU cloud computing
 
 > **💡 Models (8.9GB) download automatically on first deployment - No manual setup needed!**
