@@ -1,0 +1,41 @@
+services:
+  # Main FastAPI Application
+  - type: web
+    name: qa-tutor-agent
+    env: python
+    region: oregon
+    plan: standard
+    branch: main
+    buildCommand: pip install -r requirements.txt && bash download_models.sh
+    startCommand: uvicorn Scripts.unified_app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: QDRANT_HOST
+        value: localhost
+      - key: QDRANT_PORT
+        value: 6333
+      - key: LMSTUDIO_URL
+        value: http://localhost:1234/v1/chat/completions
+      - key: LMSTUDIO_MODEL
+        value: meta-llama-3.1-8b-instruct
+    disk:
+      name: models-storage
+      mountPath: /opt/render/project/src/models
+      sizeGB: 20
+    healthCheckPath: /
+
+  # Qdrant Vector Database (Optional - can use Qdrant Cloud instead)
+  # - type: pserv
+  #   name: qdrant-db
+  #   env: docker
+  #   region: oregon
+  #   plan: starter
+  #   dockerfilePath: ./Dockerfile.qdrant
+  #   envVars:
+  #     - key: QDRANT__SERVICE__GRPC_PORT
+  #       value: 6334
+  #   disk:
+  #     name: qdrant-storage
+  #     mountPath: /qdrant/storage
+  #     sizeGB: 10

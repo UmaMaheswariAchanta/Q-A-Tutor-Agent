@@ -1,0 +1,13 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "pip install -r requirements.txt"
+
+[deploy]
+startCommand = "bash download_models.sh && uvicorn Scripts.unified_app:app --host 0.0.0.0 --port $PORT"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[env]
+PYTHON_VERSION = "3.11"
+QDRANT_HOST = "localhost"
+QDRANT_PORT = "6333"

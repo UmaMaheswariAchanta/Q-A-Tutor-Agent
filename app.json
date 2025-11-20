@@ -1,0 +1,64 @@
+{
+  "name": "Q&A Tutor Agent",
+  "description": "AI-powered network security tutoring system with RAG chatbot and adaptive quiz generation using local LLM inference",
+  "repository": "https://github.com/YOUR_USERNAME/YOUR_REPO",
+  "logo": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/assets/logo.png",
+  "keywords": [
+    "fastapi",
+    "llm",
+    "rag",
+    "chatbot",
+    "quiz",
+    "education",
+    "qdrant",
+    "vector-database",
+    "ai",
+    "machine-learning"
+  ],
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "bash download_models.sh"
+  },
+  "env": {
+    "QDRANT_HOST": {
+      "description": "Qdrant vector database host (use internal URL if deploying Qdrant separately)",
+      "value": "localhost",
+      "required": false
+    },
+    "QDRANT_PORT": {
+      "description": "Qdrant port number",
+      "value": "6333",
+      "required": false
+    },
+    "LMSTUDIO_URL": {
+      "description": "LM Studio API endpoint (for local LLM inference)",
+      "value": "http://localhost:1234/v1/chat/completions",
+      "required": false
+    },
+    "LMSTUDIO_MODEL": {
+      "description": "LLM model name to use",
+      "value": "meta-llama-3.1-8b-instruct",
+      "required": false
+    },
+    "SERPAPI_API_KEY": {
+      "description": "SerpAPI key for web search fallback (optional)",
+      "required": false
+    },
+    "PYTHON_VERSION": {
+      "description": "Python version",
+      "value": "3.11.0"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "standard-2x"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "stack": "heroku-22"
+}
