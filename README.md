@@ -31,8 +31,39 @@ Deploy to cloud platforms with automatic model downloads. Choose from CPU-based 
 [![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/deploy?repo=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
 **GPU Cloud (Recommended for faster inference)**
-- **RunPod GPU** - Dedicated GPU instances for LLM workloads ([Deployment Guide](./RUNPOD_DEPLOYMENT.md))
-- **Vast.ai GPU** - Affordable GPU cloud computing
+
+[![Deploy on RunPod](https://img.shields.io/badge/Deploy%20to-RunPod%20GPU-7B2CBF?style=for-the-badge&logo=googlecloud&logoColor=white)](https://www.runpod.io/console/pods)
+
+**Quick Deploy to RunPod:**
+
+1. **Create GPU Pod** at [RunPod Console](https://www.runpod.io/console/pods)
+   - Choose RTX 4090, 3090, or A4000
+   - Select `runpod/pytorch:latest` template
+   - Set 30-50 GB disk space
+
+2. **Open Web Terminal** and run:
+   ```bash
+   # Clone repository
+   git clone https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent.git
+   cd Q-A-Tutor-Agent
+
+   # Install and setup
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   bash download_models.sh
+
+   # Start application
+   bash start.sh
+   # OR: uvicorn Scripts.unified_app:app --host 0.0.0.0 --port 7860
+   ```
+
+3. **Access Your App** at:
+   ```
+   https://your-pod-id-7860.proxy.runpod.net
+   ```
+   (Find URL in RunPod Console → HTTP Service [Port 7860])
+
+📘 **Detailed Guide:** [RUNPOD_DEPLOYMENT.md](./RUNPOD_DEPLOYMENT.md)
 
 > **💡 Models (8.9GB) download automatically on first deployment - No manual setup needed!**
 
