@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security Tutor - Unified Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+            min-height: 600px;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 28px 40px;
+            text-align: center;
+        }
+
+        .chatbot-header h1 {
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .chatbot-header p {
+            font-size: 1.05em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .chatbot-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chatbot-left {
+            flex: 0 0 420px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-right {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .form-section {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.05em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.2s ease;
+            background: white;
+            min-height: 130px;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.05em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-section {
+            margin-top: 28px;
+            padding-top: 28px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #eef2ff 0%, #f0f4ff 100%);
+            border: 2px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-box h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            color: #2d3748;
+            font-size: 1em;
+            line-height: 1.7;
+            font-weight: 500;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .answer-section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .answer-box, .sources-box {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .answer-box h3, .sources-box h3 {
+            margin-bottom: 16px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+        }
+
+        .answer-box h3 {
+            color: #48bb78;
+        }
+
+        .sources-box h3 {
+            color: #764ba2;
+        }
+
+        .answer-content, .sources-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .answer-text, .sources-text {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #2d3748;
+            font-size: 1.05em;
+            word-wrap: break-word;
+        }
+
+        .sources-text {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 4px solid #764ba2;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 4.5em;
+            margin-bottom: 24px;
+            opacity: 0.4;
+        }
+
+        .empty-state p {
+            font-size: 1.15em;
+            line-height: 1.7;
+            color: #4a5568;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 28px 40px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .quiz-header p {
+            font-size: 1.05em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .quiz-content {
+            padding: 40px;
+        }
+
+        .generate-section {
+            background: #f8fafc;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .generate-section label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.05em;
+        }
+
+        .generate-section input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+            background: white;
+        }
+
+        .generate-section input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .question-block {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .question-block:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .question-block.error-highlight {
+            border-color: #f56565;
+            box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.2);
+        }
+
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 14px;
+            font-size: 0.95em;
+            flex-shrink: 0;
+        }
+
+        .question-text {
+            font-size: 1.15em;
+            color: #2d3748;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            background: #edf2f7;
+            border-color: #c7d2fe;
+            transform: translateX(4px);
+        }
+
+        .option-label.selected {
+            background: linear-gradient(135deg, #eef2ff 0%, #f0f4ff 100%);
+            border-color: #667eea;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.15);
+            font-weight: 500;
+        }
+
+        .option-label input[type="radio"] {
+            margin: 0;
+            margin-right: 14px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            flex: 1;
+            color: #2d3748;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .option-label.selected .option-text {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+
+        .submit-section {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .submit-button {
+            padding: 16px 48px;
+            font-size: 1.1em;
+            width: auto;
+            min-width: 220px;
+        }
+
+        .results-section {
+            margin-top: 32px;
+        }
+
+        .results-header {
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 28px;
+        }
+
+        .results-header h2 {
+            font-size: 2em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .result-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-item.correct {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .result-item.incorrect {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 1.1em;
+        }
+
+        .result-icon {
+            font-size: 1.5em;
+            margin-right: 12px;
+        }
+
+        .result-question {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 14px;
+            font-size: 1.05em;
+        }
+
+        .result-answer {
+            margin: 10px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #cbd5e0;
+        }
+
+        .result-answer.correct-answer {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .partial-credit {
+            margin-top: 10px;
+            padding: 12px;
+            background: #fffaf0;
+            border-radius: 8px;
+            border-left: 4px solid #f6ad55;
+            color: #b7791f;
+            font-size: 0.95em;
+        }
+
+        .result-explanation {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #764ba2;
+            color: #4a5568;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .chatbot-main {
+                flex-direction: column;
+            }
+
+            .chatbot-left {
+                flex: 0 0 auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                max-height: 400px;
+            }
+
+            .chatbot-container {
+                height: auto;
+                min-height: calc(100vh - 180px);
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px 20px;
+            }
+
+            .navbar-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .chatbot-header h1, .quiz-header h1 {
+                font-size: 1.6em;
+            }
+
+            .chatbot-left, .chatbot-right, .quiz-content {
+                padding: 24px;
+            }
+
+            .question-block {
+                padding: 20px;
+            }
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        /* Homepage Styles */
+        .homepage-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section h1 {
+            font-size: 3em;
+            margin-bottom: 16px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .hero-section p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 16px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .feature-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .feature-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .info-section h2 {
+            font-size: 2.2em;
+            margin-bottom: 24px;
+            color: #2d3748;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .info-section p {
+            font-size: 1.1em;
+            color: #4a5568;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.2em;
+            }
+
+            .hero-section p {
+                font-size: 1.1em;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .feature-card {
+                padding: 32px 24px;
+            }
+
+            .info-section {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span>🤖</span>
+                <span>Network Security Tutor</span>
+            </div>
+            <div class="navbar-tabs">
+                <a href="/" class="nav-tab {% if active_tab == 'home' %}active{% endif %}" onclick="switchTab('home', event); return false;">
+                    🏠 Home
+                </a>
+                <a href="/chatbot" class="nav-tab {% if active_tab == 'chatbot' %}active{% endif %}" onclick="switchTab('chatbot', event); return false;">
+                    💬 Chatbot
+                </a>
+                <a href="/quiz" class="nav-tab {% if active_tab == 'quiz' %}active{% endif %}" onclick="switchTab('quiz', event); return false;">
+                    🧠 Quiz
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Homepage Tab -->
+        <div id="home-tab" class="tab-content {% if active_tab == 'home' %}active{% endif %}">
+            <div class="homepage-container">
+                <div class="hero-section">
+                    <h1>Welcome to Network Security Tutor</h1>
+                    <p>Your intelligent learning companion for mastering network security concepts. Ask questions, test your knowledge, and enhance your understanding with AI-powered tools.</p>
+                </div>
+
+                <div class="features-grid">
+                    <a href="/chatbot" class="feature-card" onclick="switchTab('chatbot', event); return false;">
+                        <span class="feature-icon">💬</span>
+                        <h2>Q&A Chatbot</h2>
+                        <p>Get instant answers to your network security questions with AI-powered responses backed by course materials.</p>
+                        <ul class="feature-list">
+                            <li>Semantic search through course documents</li>
+                            <li>Context-aware responses</li>
+                            <li>Source citations and references</li>
+                            <li>Web search fallback for additional information</li>
+                        </ul>
+                        <span class="feature-button">Start Chatting →</span>
+                    </a>
+
+                    <a href="/quiz" class="feature-card" onclick="switchTab('quiz', event); return false;">
+                        <span class="feature-icon">🧠</span>
+                        <h2>Interactive Quiz</h2>
+                        <p>Test your knowledge with AI-generated quizzes covering various network security topics and question types.</p>
+                        <ul class="feature-list">
+                            <li>Multiple question types (True/False, Multiple Choice, etc.)</li>
+                            <li>Customizable topics</li>
+                            <li>Instant feedback and explanations</li>
+                            <li>Performance tracking</li>
+                        </ul>
+                        <span class="feature-button">Take a Quiz →</span>
+                    </a>
+                </div>
+
+                <div class="info-section">
+                    <h2>About This Application</h2>
+                    <p>
+                        Network Security Tutor is an intelligent educational platform designed to help students learn and master network security concepts. 
+                        Powered by advanced AI and vector search technology, it provides personalized learning experiences through interactive Q&A sessions 
+                        and adaptive quizzes. Whether you're preparing for exams or deepening your understanding of cybersecurity principles, 
+                        this tool is here to support your learning journey.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Chatbot Tab -->
+        <div id="chatbot-tab" class="tab-content {% if active_tab == 'chatbot' %}active{% endif %}">
+            <div class="chatbot-container">
+                <div class="chatbot-header">
+                    <h1>💬 Q&A Tutor Agent</h1>
+                    <p>Ask questions about Network Security course materials</p>
+                </div>
+                <div class="chatbot-main">
+                    <div class="chatbot-left">
+                        <div class="form-section">
+                            <form method="post" action="/query-form" id="queryForm">
+                                <label for="prompt">Enter your Query:</label>
+                                <textarea id="prompt" name="prompt" rows="6" placeholder="Type your question here..." required>{% if prompt %}{{ prompt }}{% endif %}</textarea>
+                                <button type="submit" id="submitBtn">Ask Question</button>
+                            </form>
+                        </div>
+
+                        {% if prompt %}
+                        <div class="question-section">
+                            <div class="question-box">
+                                <h3><span class="icon">❓</span> Your Question</h3>
+                                <div class="question-text">{{ prompt }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="loading" id="loading">
+                            <div class="spinner"></div>
+                            <p>Processing your query...</p>
+                        </div>
+                    </div>
+
+                    <div class="chatbot-right">
+                        {% if response %}
+                        <div class="answer-section">
+                            <div class="answer-box">
+                                <h3><span class="icon">💬</span> Chatbot Response</h3>
+                                <div class="answer-content">
+                                    <div class="answer-text">{{ response }}</div>
+                                </div>
+                            </div>
+                            <div class="sources-box">
+                                <h3><span class="icon">📚</span> Sources</h3>
+                                <div class="sources-content">
+                                    <div class="sources-text">{{ source }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💡</div>
+                            <p>Enter a question in the left panel to get started.<br>Your answer and sources will appear here.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Tab -->
+        <div id="quiz-tab" class="tab-content {% if active_tab == 'quiz' %}active{% endif %}">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <h1>🧠 Network Security Quiz</h1>
+                    <p>Test your knowledge with AI-generated questions</p>
+                </div>
+                <div class="quiz-content">
+                    <!-- Generate Quiz Form -->
+                    <div class="generate-section">
+                        <form action="/generate" method="post" id="generateForm">
+                            <label for="topic">Topic (optional - leave blank for random topics):</label>
+                            <input type="text" id="topic" name="topic" placeholder="e.g., firewalls, encryption, VPN">
+                            <button type="submit">Generate 5 Questions</button>
+                        </form>
+                    </div>
+
+                    <div class="loading" id="quizLoading">
+                        <div class="spinner"></div>
+                        <p>Generating questions...</p>
+                    </div>
+
+                    <!-- Quiz Form -->
+                    {% if quiz %}
+                    <form id="quizForm" method="post" action="/submit-quiz">
+
+                        {% for q in quiz %}
+                        {% set question_num = loop.index %}
+                        <div class="question-block" data-question-id="{{ question_num }}">
+                            <div class="question-text">
+                                <span class="question-number">{{ question_num }}</span>
+                                <span>{{ q.question }}</span>
+                            </div>
+                            
+                            <div class="options-container">
+                                {% if q.type == "multiple_choice" and q.options %}
+                                    {% for opt in q.options %}
+                                    {% set option_num = loop.index0 %}
+                                    <label class="option-label" for="q{{ question_num }}_opt{{ option_num }}">
+                                        <input 
+                                            type="radio" 
+                                            id="q{{ question_num }}_opt{{ option_num }}"
+                                            name="answer_{{ question_num }}" 
+                                            value="{{ opt }}"
+                                            onchange="handleRadioChange(this)"
+                                        >
+                                        <span class="option-text">{{ opt }}</span>
+                                    </label>
+                                    {% endfor %}
+                                {% elif q.type == "true_false" and q.options %}
+                                    {% for opt in q.options %}
+                                    {% set option_num = loop.index0 %}
+                                    <label class="option-label" for="q{{ question_num }}_opt{{ option_num }}">
+                                        <input 
+                                            type="radio" 
+                                            id="q{{ question_num }}_opt{{ option_num }}"
+                                            name="answer_{{ question_num }}" 
+                                            value="{{ opt }}"
+                                            onchange="handleRadioChange(this)"
+                                        >
+                                        <span class="option-text">{{ opt }}</span>
+                                    </label>
+                                    {% endfor %}
+                                {% elif q.type == "multiple_answer" and q.options %}
+                                    {% for opt in q.options %}
+                                    {% set option_num = loop.index0 %}
+                                    <label class="option-label" for="q{{ question_num }}_multi{{ option_num }}">
+                                        <input 
+                                            type="checkbox" 
+                                            id="q{{ question_num }}_multi{{ option_num }}"
+                                            name="answer_{{ question_num }}" 
+                                            value="{{ opt }}"
+                                            onchange="handleCheckboxChange(this)"
+                                        >
+                                        <span class="option-text">{{ opt }}</span>
+                                    </label>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <input type="hidden" name="question_{{ question_num }}" value="{{ q.question }}">
+                            {% if q.type == "multiple_answer" %}
+                            <input type="hidden" name="correct_{{ question_num }}" value='{{ q.correct_answers | tojson }}'>
+                            {% else %}
+                            <input type="hidden" name="correct_{{ question_num }}" value="{{ q.correct_answer }}">
+                            {% endif %}
+                            <input type="hidden" name="type_{{ question_num }}" value="{{ q.type }}">
+                            <input type="hidden" name="explanation_{{ question_num }}" value="{{ q.explanation }}">
+                        </div>
+                        {% endfor %}
+
+                        <div class="submit-section">
+                            <button type="submit" class="submit-button" id="submitQuizBtn">Submit Answers</button>
+                        </div>
+                    </form>
+                    {% endif %}
+
+                    <!-- Results Display -->
+                    {% if results %}
+                    <div class="results-section">
+                        <div class="results-header">
+                            <h2>Quiz Results</h2>
+                            <div class="score-display">
+                                {% set correct_count = results | selectattr('correct') | list | length %}
+                                Score: {{ correct_count }}/{{ results | length }} ({{ ((correct_count / results | length) * 100) | int }}%)
+                            </div>
+                        </div>
+
+                        {% for r in results %}
+                        <div class="result-item {% if r.correct %}correct{% else %}incorrect{% endif %}">
+                            <div class="result-header">
+                                <span class="result-icon">{% if r.correct %}✅{% else %}❌{% endif %}</span>
+                                <strong>Question {{ loop.index }}</strong>
+                            </div>
+                            <div class="result-question">{{ r.question }}</div>
+                            <div class="result-answer {% if r.correct %}correct-answer{% endif %}">
+                                <strong>Your answer:</strong> {{ r.user_answer if r.user_answer else "No answer provided" }}
+                            </div>
+                            {% if r.partial_score is defined and not r.correct %}
+                            <div class="partial-credit">
+                                <strong>Partial credit:</strong> {{ (r.partial_score * 100) | round(0, 'floor') }}%
+                            </div>
+                            {% endif %}
+                            {% if not r.correct %}
+                            <div class="result-answer">
+                                <strong>Correct answer:</strong> {{ r.correct_answer }}
+                            </div>
+                            {% endif %}
+                            {% if r.explanation %}
+                            <div class="result-explanation">
+                                <strong>Explanation:</strong> {{ r.explanation }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <div style="text-align: center; margin-top: 32px;">
+                            <a href="/quiz" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.2s ease;">
+                                Generate New Quiz
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if not quiz and not results %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <p>Click "Generate 5 Questions" above to start your quiz!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab, event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const targetTab = document.getElementById(tab + '-tab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+            
+            // Update navbar active state
+            document.querySelectorAll('.nav-tab').forEach(navTab => {
+                navTab.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav tab
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(navTab => {
+                const href = navTab.getAttribute('href');
+                if ((tab === 'home' && href === '/') || 
+                    (tab === 'chatbot' && href === '/chatbot') || 
+                    (tab === 'quiz' && href === '/quiz')) {
+                    navTab.classList.add('active');
+                }
+            });
+            
+            // Update URL without reload
+            const url = tab === 'home' ? '/' : '/' + tab;
+            window.history.pushState({}, '', url);
+        }
+
+        // Chatbot form submission
+        const queryForm = document.getElementById('queryForm');
+        if (queryForm) {
+            queryForm.addEventListener('submit', function(e) {
+                const submitBtn = document.getElementById('submitBtn');
+                const loading = document.getElementById('loading');
+                
+                if (loading) loading.classList.add('show');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Processing...';
+                }
+                
+                const answerSection = document.querySelector('.answer-section');
+                const emptyState = document.querySelector('.empty-state');
+                if (answerSection) answerSection.remove();
+                if (emptyState) emptyState.remove();
+                
+                const rightPanel = document.querySelector('.chatbot-right');
+                if (rightPanel) rightPanel.scrollTop = 0;
+            });
+        }
+
+        // Quiz radio button selection
+        function handleRadioChange(radio) {
+            const questionBlock = radio.closest('.question-block');
+            if (!questionBlock) return;
+            
+            const allOptions = questionBlock.querySelectorAll('.option-label');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            const selectedLabel = radio.closest('.option-label');
+            if (selectedLabel) selectedLabel.classList.add('selected');
+        }
+
+        function handleCheckboxChange(checkbox) {
+            const label = checkbox.closest('.option-label');
+            if (label) {
+                if (checkbox.checked) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            }
+        }
+
+        // Quiz form submission validation
+        const quizForm = document.getElementById('quizForm');
+        if (quizForm) {
+            quizForm.addEventListener('submit', function() {
+                const submitBtn = document.getElementById('submitQuizBtn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Submitting...';
+                }
+            });
+        }
+
+        // Generate form submission
+        const generateForm = document.getElementById('generateForm');
+        if (generateForm) {
+            generateForm.addEventListener('submit', function() {
+                const quizLoading = document.getElementById('quizLoading');
+                if (quizLoading) quizLoading.classList.add('show');
+            });
+        }
+
+        // Initialize: Check for pre-selected answers
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
+            checkedRadios.forEach(radio => {
+                handleRadioChange(radio);
+            });
+        });
+    </script>
+</body>
+</html>
