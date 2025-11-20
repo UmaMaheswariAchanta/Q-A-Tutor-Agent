@@ -19,27 +19,50 @@
 
 ## 🚀 One-Click Deployment
 
-**Deploy instantly to your preferred cloud platform - models download automatically!**
+Deploy to cloud platforms with automatic model downloads. Choose from CPU-based hosting or GPU platforms for faster LLM inference.
 
-<div align="center">
+### Supported Platforms
 
-### Choose Your Platform
+**Cloud Hosting (CPU)**
+- **Railway** - Easy deployment with automatic configuration
+- **Render** - Production-ready with persistent disk storage
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
+[![Deploy on Railway](https://img.shields.io/badge/Deploy%20to-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new/template?template=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
+[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/deploy?repo=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
-
-**Or use Docker:**
-
-```bash
-docker run -p 8000:8000 ghcr.io/umamaheswariaachanta/qa-tutor-agent:latest
-```
-
-</div>
+**GPU Cloud (Recommended for faster inference)**
+- **RunPod GPU** - Dedicated GPU instances for LLM workloads
+- **Vast.ai GPU** - Affordable GPU cloud computing
 
 > **💡 Models (8.9GB) download automatically on first deployment - No manual setup needed!**
+
+### Unsupported Platforms
+
+![Heroku Not Supported](https://img.shields.io/badge/Heroku-NOT%20SUPPORTED-999999?style=for-the-badge&logo=heroku&logoColor=white)
+
+**Heroku cannot deploy this project due to:**
+- 500MB slug size limit (models are 8.9GB)
+- No GPU support for LLM inference
+- No persistent storage for large models
+- 512MB-2.5GB RAM limits insufficient
+- Ephemeral filesystem prevents model downloads
+- CPU-only instances too slow for inference
+
+### Run with Docker
+
+```bash
+# Build image
+docker build -t qa-tutor-agent .
+
+# Run container
+docker run -d -p 8000:8000 \
+  -e QDRANT_HOST=localhost \
+  -e QDRANT_PORT=6333 \
+  --name qa-tutor \
+  qa-tutor-agent
+
+# Access at http://localhost:8000
+```
 
 ---
 
