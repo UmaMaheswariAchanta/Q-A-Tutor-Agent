@@ -25,16 +25,16 @@
 
 ### Choose Your Platform
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/YOUR_USERNAME/YOUR_REPO)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/YOUR_USERNAME/YOUR_REPO)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/YOUR_USERNAME/YOUR_REPO)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
 **Or use Docker:**
 
 ```bash
-docker run -p 8000:8000 ghcr.io/YOUR_USERNAME/qa-tutor-agent:latest
+docker run -p 8000:8000 ghcr.io/umamaheswariaachanta/qa-tutor-agent:latest
 ```
 
 </div>
@@ -137,7 +137,7 @@ That's it! The deployment system handles everything automatically:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git clone https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent.git
 cd Q-A-Tutor-Agent-LMstudio
 
 # 2. Install dependencies
@@ -558,8 +558,8 @@ in the Software without restriction...
 
 **Need Help?**
 
-[![GitHub Issues](https://img.shields.io/badge/Issues-Report%20Bug-red?style=for-the-badge&logo=github)](https://github.com/YOUR_USERNAME/YOUR_REPO/issues)
-[![Discussions](https://img.shields.io/badge/Discussions-Ask%20Question-blue?style=for-the-badge&logo=github)](https://github.com/YOUR_USERNAME/YOUR_REPO/discussions)
+[![GitHub Issues](https://img.shields.io/badge/Issues-Report%20Bug-red?style=for-the-badge&logo=github)](https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent/issues)
+[![Discussions](https://img.shields.io/badge/Discussions-Ask%20Question-blue?style=for-the-badge&logo=github)](https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent/discussions)
 [![Documentation](https://img.shields.io/badge/Docs-Read%20More-green?style=for-the-badge&logo=readthedocs)](./DEPLOYMENT.md)
 
 </div>
@@ -570,13 +570,13 @@ in the Software without restriction...
 
 <div align="center">
 
-![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/YOUR_REPO?style=social)
-![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/YOUR_REPO?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/YOUR_USERNAME/YOUR_REPO?style=social)
+![GitHub stars](https://img.shields.io/github/stars/UmaMaheswariAchanta/Q-A-Tutor-Agent?style=social)
+![GitHub forks](https://img.shields.io/github/forks/UmaMaheswariAchanta/Q-A-Tutor-Agent?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/UmaMaheswariAchanta/Q-A-Tutor-Agent?style=social)
 
-![Code Size](https://img.shields.io/github/languages/code-size/YOUR_USERNAME/YOUR_REPO)
-![Repo Size](https://img.shields.io/github/repo-size/YOUR_USERNAME/YOUR_REPO)
-![Last Commit](https://img.shields.io/github/last-commit/YOUR_USERNAME/YOUR_REPO)
+![Code Size](https://img.shields.io/github/languages/code-size/UmaMaheswariAchanta/Q-A-Tutor-Agent)
+![Repo Size](https://img.shields.io/github/repo-size/UmaMaheswariAchanta/Q-A-Tutor-Agent)
+![Last Commit](https://img.shields.io/github/last-commit/UmaMaheswariAchanta/Q-A-Tutor-Agent)
 
 </div>
 

@@ -1,8 +1,8 @@
 {
   "name": "Q&A Tutor Agent",
   "description": "AI-powered network security tutoring system with RAG chatbot and adaptive quiz generation using local LLM inference",
-  "repository": "https://github.com/YOUR_USERNAME/YOUR_REPO",
-  "logo": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/assets/logo.png",
+  "repository": "https://github.com/UmaMaheswariAchanta/Q-A-Tutor-Agent",
+  "logo": "https://raw.githubusercontent.com/UmaMaheswariAchanta/Q-A-Tutor-Agent/main/assets/logo.png",
   "keywords": [
     "fastapi",
     "llm",
