@@ -1050,10 +1050,10 @@
                                     {% for opt in q.options %}
                                     {% set option_num = loop.index0 %}
                                     <label class="option-label" for="q{{ question_num }}_opt{{ option_num }}">
-                                        <input 
-                                            type="radio" 
+                                        <input
+                                            type="radio"
                                             id="q{{ question_num }}_opt{{ option_num }}"
-                                            name="answer_{{ question_num }}" 
+                                            name="answer_{{ question_num }}"
                                             value="{{ opt }}"
                                             onchange="handleRadioChange(this)"
                                         >
@@ -1064,10 +1064,10 @@
                                     {% for opt in q.options %}
                                     {% set option_num = loop.index0 %}
                                     <label class="option-label" for="q{{ question_num }}_opt{{ option_num }}">
-                                        <input 
-                                            type="radio" 
+                                        <input
+                                            type="radio"
                                             id="q{{ question_num }}_opt{{ option_num }}"
-                                            name="answer_{{ question_num }}" 
+                                            name="answer_{{ question_num }}"
                                             value="{{ opt }}"
                                             onchange="handleRadioChange(this)"
                                         >
@@ -1078,22 +1078,33 @@
                                     {% for opt in q.options %}
                                     {% set option_num = loop.index0 %}
                                     <label class="option-label" for="q{{ question_num }}_multi{{ option_num }}">
-                                        <input 
-                                            type="checkbox" 
+                                        <input
+                                            type="checkbox"
                                             id="q{{ question_num }}_multi{{ option_num }}"
-                                            name="answer_{{ question_num }}" 
+                                            name="answer_{{ question_num }}"
                                             value="{{ opt }}"
                                             onchange="handleCheckboxChange(this)"
                                         >
                                         <span class="option-text">{{ opt }}</span>
                                     </label>
                                     {% endfor %}
+                                {% elif q.type == "open_ended" %}
+                                    <textarea
+                                        name="answer_{{ question_num }}"
+                                        id="q{{ question_num }}_open"
+                                        rows="6"
+                                        placeholder="Type your detailed answer here..."
+                                        style="width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; font-family: inherit; resize: vertical; transition: all 0.2s ease; background: white; min-height: 130px; line-height: 1.6;"
+                                    ></textarea>
                                 {% endif %}
                             </div>
 
                             <input type="hidden" name="question_{{ question_num }}" value="{{ q.question }}">
                             {% if q.type == "multiple_answer" %}
                             <input type="hidden" name="correct_{{ question_num }}" value='{{ q.correct_answers | tojson }}'>
+                            {% elif q.type == "open_ended" %}
+                            <input type="hidden" name="model_answer_{{ question_num }}" value="{{ q.model_answer }}">
+                            <input type="hidden" name="key_points_{{ question_num }}" value='{{ q.key_points | tojson }}'>
                             {% else %}
                             <input type="hidden" name="correct_{{ question_num }}" value="{{ q.correct_answer }}">
                             {% endif %}
@@ -1114,8 +1125,15 @@
                         <div class="results-header">
                             <h2>Quiz Results</h2>
                             <div class="score-display">
-                                {% set correct_count = results | selectattr('correct') | list | length %}
-                                Score: {{ correct_count }}/{{ results | length }} ({{ ((correct_count / results | length) * 100) | int }}%)
+                                {% set total_score = namespace(value=0) %}
+                                {% for r in results %}
+                                    {% if r.score is defined %}
+                                        {% set total_score.value = total_score.value + r.score %}
+                                    {% elif r.correct %}
+                                        {% set total_score.value = total_score.value + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                Score: {{ total_score.value | round(2) }}/{{ results | length }} ({{ ((total_score.value / results | length) * 100) | round(1) }}%)
                             </div>
                         </div>
 
@@ -1134,9 +1152,14 @@
                                 <strong>Partial credit:</strong> {{ (r.partial_score * 100) | round(0, 'floor') }}%
                             </div>
                             {% endif %}
-                            {% if not r.correct %}
+                            {% if r.ai_feedback is defined %}
+                            <div class="result-answer" style="border-left-color: #667eea; background: #f0f4ff;">
+                                <strong>AI Feedback:</strong> {{ r.ai_feedback }}
+                            </div>
+                            {% endif %}
+                            {% if not r.correct and r.correct_answer %}
                             <div class="result-answer">
-                                <strong>Correct answer:</strong> {{ r.correct_answer }}
+                                <strong>Model answer:</strong> {{ r.correct_answer }}
                             </div>
                             {% endif %}
                             {% if r.explanation %}

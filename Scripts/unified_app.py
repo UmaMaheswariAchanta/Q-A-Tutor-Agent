@@ -37,8 +37,8 @@ COLLECTION_NAME = "network_security_docs"
 RELEVANCE_THRESHOLD = 0.40
 NUM_QUESTIONS = 5
 
-# LM Studio API endpoint (local)
-LMSTUDIO_URL = "http://localhost:1234/v1/chat/completions"
+# LM Studio API endpoint (local GPU)
+LMSTUDIO_URL = "http://192.168.96.1:1234/v1/chat/completions"
 LMSTUDIO_MODEL = "meta-llama-3.1-8b-instruct"
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "0296b30af4db54f0c40dfac526966c93ef22816317822c3935bfec0d614adfe4")
@@ -50,22 +50,27 @@ SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "0296b30af4db54f0c40dfac526966c93
 print("--- SYSTEM STARTUP ---")
 
 # 1. Embedding Model for Chatbot
-print("1. Loading Embedding Model for Chatbot…")
+print("1. Loading Embedding Model for Chatbot...")
 embedder_chatbot = SentenceTransformer("all-MiniLM-L6-v2")
 
 # 2. Embedding Model for Quiz
-print("2. Loading Embedding Model for Quiz…")
+print("2. Loading Embedding Model for Quiz...")
 embedder_quiz = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
 
 # 3. Qdrant Client
-print(f"3. Connecting to Qdrant at {QDRANT_HOST}:{QDRANT_PORT}…")
+print(f"3. Connecting to Qdrant at {QDRANT_HOST}:{QDRANT_PORT}...")
 try:
     qdrant = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
     qdrant.get_collections()
-    print("   ✔ Connected to Qdrant.\n")
+    print("   [OK] Connected to Qdrant.\n")
 except Exception as e:
-    print("   ❌ Qdrant Connection Failed:", e)
-    qdrant = None
+    print(f"   [WARN] Qdrant server not found. Using in-memory mode...")
+    try:
+        qdrant = QdrantClient(":memory:")
+        print("   [OK] In-memory Qdrant initialized.\n")
+    except Exception as mem_err:
+        print(f"   [ERROR] Could not initialize Qdrant: {mem_err}")
+        qdrant = None
 
 print("--- STARTUP COMPLETE ---\n")
 
@@ -197,7 +202,8 @@ CONTEXT:
 QUESTION_TYPES = [
     "true_false",
     "multiple_choice",
-    "multiple_answer"
+    "multiple_answer",
+    "open_ended"
 ]
 
 def lmstudio_generate(prompt):
@@ -273,8 +279,8 @@ Multiple Choice JSON:
 {{
   "question": "...",
   "type": "multiple_choice",
-  "options": ["A", "B", "C", "D"],
-  "correct_answer": "<exact option text>",
+  "options": ["Full text of option A", "Full text of option B", "Full text of option C", "Full text of option D"],
+  "correct_answer": "Full text of the correct option",
   "explanation": "..."
 }}
 
@@ -282,8 +288,17 @@ Multiple Answer JSON:
 {{
   "question": "...",
   "type": "multiple_answer",
-  "options": ["A", "B", "C", "D"],
-  "correct_answers": ["...", "..."],
+  "options": ["Full text of option A", "Full text of option B", "Full text of option C", "Full text of option D"],
+  "correct_answers": ["Full text of correct option 1", "Full text of correct option 2"],
+  "explanation": "..."
+}}
+
+Open-Ended JSON:
+{{
+  "question": "...",
+  "type": "open_ended",
+  "model_answer": "<detailed expected answer>",
+  "key_points": ["point1", "point2", "point3"],
   "explanation": "..."
 }}
 
@@ -291,6 +306,9 @@ IMPORTANT:
 - OUTPUT JSON ONLY.
 - No markdown.
 - No text outside JSON.
+- For multiple_choice and multiple_answer: options must contain FULL COMPLETE SENTENCES, not just letters!
+- For open_ended questions, provide a comprehensive model_answer and 3-5 key_points that should be in a correct answer.
+- Each option should be a complete, self-contained answer choice.
 """
 
     raw = lmstudio_generate(prompt)
@@ -305,9 +323,11 @@ IMPORTANT:
     if data["type"] == "true_false":
         data["options"] = ["True", "False"]
 
+    # Validate multiple choice/answer questions have options
     if data["type"] in ["multiple_choice", "multiple_answer"]:
-        if "options" not in data or len(data["options"]) != 4:
-            data["options"] = ["A", "B", "C", "D"]
+        if "options" not in data or not data["options"] or len(data["options"]) < 2:
+            print(f"Warning: Invalid options generated for {data['type']}, regenerating...")
+            return fallback_question()
 
     data.setdefault("explanation", "")
 
@@ -324,7 +344,7 @@ def fallback_question():
     }
 
 
-def grade_answer(user_answer, correct, qtype, explanation):
+def grade_answer(user_answer, correct, qtype, explanation, model_answer=None, key_points=None):
     if qtype == "multiple_answer":
         if isinstance(user_answer, list):
             user_answers = [str(x).strip() for x in user_answer if isinstance(x, str) and x.strip()]
@@ -358,6 +378,73 @@ def grade_answer(user_answer, correct, qtype, explanation):
             "correct_answer": display_correct,
             "user_answer": display_user,
             "explanation": explanation
+        }
+
+    if qtype == "open_ended":
+        answer_text = (user_answer or "").strip()
+
+        if not answer_text:
+            return {
+                "correct": False,
+                "score": 0.0,
+                "partial_score": 0.0,
+                "correct_answer": model_answer or "",
+                "user_answer": "No answer provided",
+                "explanation": explanation,
+                "ai_feedback": "No answer was provided."
+            }
+
+        # Use LLM to grade the open-ended answer
+        grading_prompt = f"""You are an expert grader for cybersecurity exams.
+Evaluate the student's answer based on the model answer and key points.
+
+QUESTION CONTEXT:
+Model Answer: {model_answer}
+Key Points: {', '.join(key_points) if key_points else 'N/A'}
+
+STUDENT ANSWER:
+{answer_text}
+
+Provide a grade as a JSON object with:
+1. score: A number between 0.0 and 1.0 (0.7-1.0 = excellent, 0.4-0.69 = good, 0.1-0.39 = partial, 0.0 = incorrect)
+2. feedback: Brief feedback on what was correct and what was missing
+
+Reply in VALID JSON ONLY:
+{{
+  "score": 0.0 to 1.0,
+  "feedback": "..."
+}}"""
+
+        try:
+            grading_result = lmstudio_generate(grading_prompt)
+            grading_data = clean_json(grading_result)
+
+            if grading_data and "score" in grading_data:
+                score = max(0.0, min(1.0, float(grading_data.get("score", 0.0))))
+                feedback = grading_data.get("feedback", "Unable to generate feedback.")
+                correct_flag = score >= 0.7
+
+                return {
+                    "correct": correct_flag,
+                    "score": score,
+                    "partial_score": score,
+                    "correct_answer": model_answer or "",
+                    "user_answer": answer_text,
+                    "explanation": explanation,
+                    "ai_feedback": feedback
+                }
+        except Exception as e:
+            print(f"Error grading open-ended question: {e}")
+
+        # Fallback if LLM grading fails
+        return {
+            "correct": False,
+            "score": 0.5,
+            "partial_score": 0.5,
+            "correct_answer": model_answer or "",
+            "user_answer": answer_text,
+            "explanation": explanation,
+            "ai_feedback": "Manual review required - automated grading failed."
         }
 
     answer_text = (user_answer or "").strip()
@@ -435,11 +522,21 @@ async def submit_quiz(request: Request):
         if qtype == "multiple_answer":
             user_answer = form.getlist(f"answer_{i}")
             correct = json.loads(form.get(f"correct_{i}"))
+            graded = grade_answer(user_answer, correct, qtype, explanation)
+        elif qtype == "open_ended":
+            user_answer = form.get(f"answer_{i}", "")
+            model_answer = form.get(f"model_answer_{i}", "")
+            key_points_str = form.get(f"key_points_{i}", "[]")
+            try:
+                key_points = json.loads(key_points_str)
+            except:
+                key_points = []
+            graded = grade_answer(user_answer, None, qtype, explanation, model_answer=model_answer, key_points=key_points)
         else:
             user_answer = form.get(f"answer_{i}", "")
             correct = form.get(f"correct_{i}")
+            graded = grade_answer(user_answer, correct, qtype, explanation)
 
-        graded = grade_answer(user_answer, correct, qtype, explanation)
         graded["question"] = question
         results.append(graded)
 
